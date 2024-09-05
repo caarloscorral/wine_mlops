@@ -12,11 +12,18 @@ jobs:
         run: |
           pip install -r requirements.txt
           python train.py  # generate plot.png
-
-          echo "MODEL METRICS"
-          cat metrics.txt
-
+          
           # Create CML report
-          # cat metrics.txt >> report.md
-          # echo '![](./plot.png "Confusion Matrix")' >> report.md
-          # cml comment create report.md
+          echo "## MODEL METRICS" >> report.md
+          cat metrics.txt >> report.md
+
+          ehco "## Data Viz" >> report.md
+          cml-publish feature_importance.png --md >> report.md
+          cml-publish residuals.png --md >> report.md
+          cml-send-comment report.md
+          
+          # cml-publish embeds the png as a markdown image in the report.md
+          # -- md indicates that img should be formatted in Markdown
+          
+          #echo '![](./plot.png "Confusion Matrix")' >> report.md
+          #cml comment create report.md
