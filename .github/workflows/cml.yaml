@@ -6,6 +6,9 @@ jobs:
     #container: docker://ghcr.io/iterative/cml:0-dvc2-base1
     steps:
       - uses: actions/checkout@v3
+      - name: Install Dependencies
+        run: |
+          pip install cml
       - name: Train model
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
