@@ -11,6 +11,8 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Your ML workflow goes here
+          nvm install 16
+          nvm use 16
           pip install -r requirements.txt
           python train.py
 
