@@ -5,9 +5,9 @@ jobs:
     runs-on: ubuntu-latest
     container: ghcr.io/iterative/cml:0-dvc2-base1
     steps:
-      - uses: actions/checkout@v4  # Update this to the latest version
+      - uses: actions/checkout@v3  # Update this to the latest version
 
-      - uses: iterative/setup-cml@v2  # Update if there's a newer version available
+      - uses: iterative/setup-cml@v1  # Update if there's a newer version available
       - name: Train model
         run: |
           # ML workflow
