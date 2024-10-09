@@ -6,13 +6,13 @@ jobs:
     # optionally use a convenient Ubuntu LTS + DVC + CML image
     # container: ghcr.io/iterative/cml:0-dvc2-base1
     steps:
-      - uses: actions/checkout@v3
-      - uses: iterative/setup-cml@v2
-      - name: Train model
-        run: |
-          # Your ML workflow goes here
-          pip install -r requirements.txt
-          python train.py
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
+    - name: Train model
+      run: |
+        # Your ML workflow goes here
+        pip install -r requirements.txt
+        python train.py
 
-          echo "MODEL METRICS"
-          cat metrics.txt
