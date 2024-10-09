@@ -15,9 +15,7 @@ jobs:
         # Your ML workflow goes here
         pip install -r requirements.txt
         python train.py
-
-        # Create CML report
-        cat metrics.txt >> report.md
-        echo '![](./plot.png "Confusion Matrix")' >> report.md
+        
+        cat results.txt >> report.md
         cml comment create report.md
 
