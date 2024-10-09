@@ -4,10 +4,13 @@ jobs:
   run:
     runs-on: ubuntu-latest
     container: ghcr.io/iterative/cml:0-dvc2-base1
-    steps:
-      - uses: actions/checkout@v3  # Update this to the latest version
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE20: true  # Force the use of Node 20
 
-      - uses: iterative/setup-cml@v1  # Update if there's a newer version available
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: iterative/setup-cml@v1
       - name: Train model
         run: |
           # ML workflow
