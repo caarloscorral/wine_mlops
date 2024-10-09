@@ -5,11 +5,9 @@ jobs:
     runs-on: ubuntu-latest
     container: ghcr.io/iterative/cml:0-dvc2-base1
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-      - uses: iterative/setup-cml@v1
+      - uses: actions/checkout@v4  # Update this to the latest version
+
+      - uses: iterative/setup-cml@v2  # Update if there's a newer version available
       - name: Train model
         run: |
           # ML workflow
@@ -18,5 +16,3 @@ jobs:
 
           echo "MODEL METRICS"
           cat metrics.txt
-
-          
