@@ -1,0 +1,11 @@
+stages:
+  train:
+    cmd: python train.py
+    deps:
+      - train.py
+    outs:
+      - feature_importance.png
+      - residuals.png
+    metrics:
+      - metrics.txt:
+          cache: false
