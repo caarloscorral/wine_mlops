@@ -32,4 +32,4 @@ jobs:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "## Model metrics" > report.md
-          cat results.txt >> report.md
+          cat metrics.txt >> report.md
