@@ -25,14 +25,14 @@ jobs:
         
       - name: Train model
         run: |
-          python scripts\\train_model.py
+          python scripts/train_model.py
           
       - name: Validate model
         id: validate
         run: |
-          python scripts\\validate_model.py
+          python scripts/validate_model.py
       
       # - name: Train the model if validation fails
       #   if: steps.validate.outcome == 'failure'
       #   run: |
-      #     python scripts\\train_model.py
+      #     python scripts/train_model.py

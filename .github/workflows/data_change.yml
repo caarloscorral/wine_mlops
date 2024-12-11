@@ -3,7 +3,7 @@ name: Retrain and validate model on data change
 on:
   push:
     paths:
-      - 'data\\wine_quality.csv'
+      - 'data/wine_quality.csv'
 
 jobs:
   train_and_validate:
@@ -25,14 +25,14 @@ jobs:
 
     - name: Train the model
       run: |
-        python scripts\\train_model.py
+        python scripts/train_model.py
 
     - name: Validate the model
       id: validate
       run: |
-        python scripts\\validate_model.py
+        python scripts/validate_model.py
     
     - name: Hyperparameter tuning or alternate model
       if: steps.validate.outcome == 'failure'
       run: |
-        python scripts\\hyperparameter_tuning.py
+        python scripts/hyperparameter_tuning.py
