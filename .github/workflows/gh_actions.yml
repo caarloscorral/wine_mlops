@@ -18,9 +18,7 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: '3.x'
-      - name: Set up Python 3.x
-      
-      - name: Train model
+      - name: Set up Python 3.x and train model
         run: |
           pip install -r requirements.txt
           python train.py
