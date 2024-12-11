@@ -1,4 +1,4 @@
-name: model_wine_quality
+name: Testing when pushing or PR to master
 on:
   push:
     branches:
@@ -22,14 +22,17 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-
+        
       - name: Train model
         run: |
-          python train.py
-        
-      - name: Write model metrics
-        env:
-          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          python scripts\\train_model.py
+          
+      - name: Validate model
+        id: validate
         run: |
-          echo "## Model metrics" > report.md
-          cat metrics.txt >> report.md
+          python scripts\\validate_model.py
+      
+      # - name: Train the model if validation fails
+      #   if: steps.validate.outcome == 'failure'
+      #   run: |
+      #     python scripts\\train_model.py
