@@ -31,7 +31,12 @@ X_train, X_test, y_train, y_test = train_test_split(df, y, test_size=0.2, random
 #################################
 
 # Trying to load best model
+model_directory = os.path.dirname(model_path)
+if not os.path.exists(model_directory):
+	os.makedirs(model_directory, exist_ok=True)
+
 if os.path.exists(model_path):
+	print(model_path)
 	with open(model_path, 'rb') as model_file:
 		model = pickle.load(model_file)
 	print("Loaded existing best model.")
