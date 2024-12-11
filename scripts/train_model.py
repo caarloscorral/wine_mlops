@@ -66,6 +66,10 @@ test_score = model.score(X_test, y_test)
 print("Test variance explained: %2.1f%%" % test_score)
 
 # Saving metrics to file
+metrics_directory = os.path.dirname(metrics_path)
+if not os.path.exists(metrics_directory):
+	os.makedirs(metrics_directory, exist_ok=True)
+
 with open(metrics_path, 'w') as json_file:
     json.dump(
         {
