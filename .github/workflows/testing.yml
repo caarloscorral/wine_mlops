@@ -24,15 +24,11 @@ jobs:
         with:
           python-version: '3.11.2'
 
-      - name: Configure Python environment
+      - name: Create virtual environment
         run: |
-          python -m venv venv
-          if [ "${{ matrix.os }}" == "windows-latest" ]; then
-            echo "venv\\Scripts\\activate" > activate.sh
-          else
-            echo "source venv/bin/activate" > activate.sh
-          fi
-          chmod +x activate.sh
+            python -m venv venv
+            $venvPath = if ($env:RUNNER_OS -eq 'Windows') { '.\venv\Scripts\activate' } else { 'source venv/bin/activate' }
+            echo $venvPath > activate_path
 
       - name: Install dependencies
         run: |
