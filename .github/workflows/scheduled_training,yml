@@ -2,7 +2,6 @@
 
 # on:
 #   schedule:
-#     # Every day at 9 am UTC
 #     - cron: '0 9 * * *'
 
 # jobs:
@@ -22,14 +21,22 @@
 #         python-version: '3.11.2'
 
 #     - name: Create virtual environment
+#       run: python -m venv venv
+
+#     - name: Activate virtual environment
+#       shell: bash
 #       run: |
-#           python -m venv venv
-#           $venvPath = if ($env:RUNNER_OS -eq 'Windows') { '.\venv\Scripts\activate' } else { 'source venv/bin/activate' }
-#           echo $venvPath > activate_path
-    
+#         if [ "${{ matrix.os }}" == "windows-latest" ]; then
+#           echo '.\\venv\\Scripts\\activate' > activate.sh
+#         else
+#           echo 'source venv/bin/activate' > activate.sh
+#         fi
+#         chmod +x activate.sh
+
 #     - name: Install dependencies
+#       shell: bash
 #       run: |
-#         . ./activate.sh
+#         source activate.sh
 #         if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
 #           sudo apt-get update
 #           sudo apt-get install python3-distutils -y
@@ -37,12 +44,14 @@
 #         python -m pip install --upgrade setuptools pip
 #         pip install -r requirements.txt
 
-#     - name: Train the model
+#     - name: Train model
+#       shell: bash
 #       run: |
-#         . ./activate.sh
+#         source activate.sh
 #         python scripts/train_model.py
 
-#     - name: Validate the model
+#     - name: Validate model
+#       shell: bash
 #       run: |
-#         . ./activate.sh
+#         source activate.sh
 #         python scripts/validate_model.py

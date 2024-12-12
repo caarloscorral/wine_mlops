@@ -16,43 +16,54 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
 
     steps:
-      - name: Checkout repository code
-        uses: actions/checkout@v3
+    - name: Checkout repository code
+      uses: actions/checkout@v3
 
-      - name: Set up Python 3.11.2
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11.2'
+    - name: Set up Python 3.11.2
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11.2'
 
-      - name: Create virtual environment
-        run: |
-            python -m venv venv
-            $venvPath = if ($env:RUNNER_OS -eq 'Windows') { '.\venv\Scripts\activate' } else { 'source venv/bin/activate' }
-            echo $venvPath > activate_path
+    - name: Create virtual environment
+      run: python -m venv venv
 
-      - name: Install dependencies
-        run: |
-          . ./activate.sh
-          if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
-            sudo apt-get update
-            sudo apt-get install python3-distutils -y
-          fi
-          python -m pip install --upgrade setuptools pip
-          pip install -r requirements.txt
+    - name: Activate virtual environment
+      shell: bash
+      run: |
+        if [ "${{ matrix.os }}" == "windows-latest" ]; then
+          echo '.\\venv\\Scripts\\activate' > activate.sh
+        else
+          echo 'source venv/bin/activate' > activate.sh
+        fi
+        chmod +x activate.sh
 
-      - name: Train model
-        run: |
-          . ./activate.sh
-          python scripts/train_model.py
+    - name: Install dependencies
+      shell: bash
+      run: |
+        source activate.sh
+        if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
+          sudo apt-get update
+          sudo apt-get install python3-distutils -y
+        fi
+        python -m pip install --upgrade setuptools pip
+        pip install -r requirements.txt
 
-      - name: Validate model
-        id: validate
-        run: |
-          . ./activate.sh
-          python scripts/validate_model.py
+    - name: Train model
+      shell: bash
+      run: |
+        source activate.sh
+        python scripts/train_model.py
 
-      # - name: Train the model if validation fails
-      #   if: steps.validate.outcome == 'failure'
-      #   run: |
-      #     . ./activate.sh
-      #     python scripts/train_model.py
+    - name: Validate model
+      id: validate
+      shell: bash
+      run: |
+        source activate.sh
+        python scripts/validate_model.py
+
+    # - name: Train the model if validation fails
+    #   if: steps.validate.outcome == 'failure'
+    #   shell: bash
+    #   run: |
+    #     source activate.sh
+    #     python scripts/train_model.py
