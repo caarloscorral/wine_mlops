@@ -1,39 +1,65 @@
 import os
 import sys
-import pickle
+
+# Append the parent directory to the sys.path to ensure create_env is accessible
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from create_env import setup_environment
+
+# Set up environment variables
+setup_environment()
+
+import mlflow
+import mlflow.sklearn
 import pandas as pd
-from dotenv import load_dotenv
 from sklearn.model_selection import train_test_split
 
-# Loading env variables
-load_dotenv()
+# Load environment variables
+data_path = os.getenv('DATA_PATH', 'data/wine_quality.csv')
+desired_test_score = float(os.getenv('DESIRED_TEST_SCORE', 0.85))
+model_seed = int(os.getenv('MODEL_SEED', 42))
+mlflow_tracking_uri = os.getenv('MLFLOW_TRACKING_URI', 'http://localhost:5000')
+experiment_name = os.getenv('MLFLOW_EXPERIMENT_NAME', 'Default_Experiment')
+mlflow_model_name = os.getenv('MLFLOW_MODEL_NAME', 'Default_Model')
+mlflow_model_stage = os.getenv('MLFLOW_MODEL_STAGE', 'None')
 
-data_path = os.getenv('DATA_PATH')
-model_path = os.getenv('MODEL_PATH')
-metrics_path = os.getenv('METRICS_PATH')
-desired_test_score = float(os.getenv('DESIRED_TEST_SCORE'))
-model_seed = int(os.getenv('MODEL_SEED'))
+# Set MLflow tracking URI
+mlflow.set_tracking_uri(mlflow_tracking_uri)
 
-# Loading model
-with open(model_path, 'rb') as model_file:
-    regr = pickle.load(model_file)
-    
-# Loading data
+# Set up MLflow experiment
+mlflow.set_experiment(experiment_name)
+
+# Load data for validation
 df = pd.read_csv(data_path)
-
-# Splitting data
 y = df.pop('quality')
 _, X_test, _, y_test = train_test_split(df, y, test_size=0.2, random_state=model_seed)
 
-# Evaluating model
-test_score = regr.score(X_test, y_test)
+# Start an MLflow run to log the evaluation
+with mlflow.start_run(run_name="Validation run"):
+	mlflow.set_tag('purpose', 'validation')
 
-# Checking if test score is lower than desired
-if test_score < desired_test_score:
-    # Returning error code if test score is lower than desired, to indicate there is needed a retraining
-	print(f"Test score {test_score}% is below the desired threshold of {desired_test_score}%!")
-	sys.exit(-1)
+	# Load model from MLflow Model Registry
+	try:
+		# Construct the model URI using the model name and stage
+		mlflow_model_uri = f'models:/{mlflow_model_name}/{mlflow_model_stage}'
+		model = mlflow.sklearn.load_model(mlflow_model_uri)
+		
+		# Evaluate the MLflow model
+		test_score = model.score(X_test, y_test)
+		mlflow.log_metric('Validation testing score', test_score)
+		print(f"MLflow model test score: {test_score:.2f}")
+		
+	except Exception as e:
+		mlflow.log_param('MLflow model loading error', str(e))
+		print(f"An error occurred while loading the MLflow model: {e}")
+		sys.exit(-1)
+	
+	# Verify if the model meets the desired accuracy threshold
+	if test_score < desired_test_score:
+		mlflow.log_param('Validation result', 'Failure')
+		print(f"Test score {test_score:.2f} is below the desired threshold of {desired_test_score:.2f}%.")
+		sys.exit(-1)
 
-# Returning 0 if test score is higher than desired
-print("Model meets the required accuracy!")
-sys.exit(0)
+	mlflow.log_param('Validation result', 'Success')
+	print("Model meets the required accuracy!")
+	sys.exit(0)
